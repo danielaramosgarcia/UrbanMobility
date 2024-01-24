@@ -145,13 +145,14 @@ class Cubo:
         glPopMatrix()
 
     def collisionDetection(self):
-        #Revisar por colision contra basurero y/o basura
+    #Revisar por colision contra basurero y/o basura
         for obj in self.basura:
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d_c = math.sqrt(d_x * d_x + d_z * d_z)
             if d_c - (self.radio + obj.radio) < 0.0:
-              #  self.collision = 1
+                #  self.collision = 1
+                # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
                 newdir_x = -self.Position[0]
                 newdir_z = -self.Position[2]
                 m = math.sqrt(newdir_x ** 2 + newdir_z  ** 2)
