@@ -1,0 +1,179 @@
+import pygame
+from pygame.locals import *
+
+# Cargamos las bibliotecas de OpenGL
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+# Se carga el archivo de la clase Cubo
+import sys
+
+sys.path.append('../../../Desktop/Graficas')
+from Cubo import Cubo
+from Basura import Basura
+from Basurero import Basurero
+
+screen_width = 500
+screen_height = 500
+# vc para el obser.
+FOVY = 60.0
+ZNEAR = 0.01
+ZFAR = 900.0
+# Variables para definir la posicion del observador
+# gluLookAt(EYE_X,EYE_Y,EYE_Z,CENTER_X,CENTER_Y,CENTER_Z,UP_X,UP_Y,UP_Z)
+EYE_X = 300.0
+EYE_Y = 200.0
+EYE_Z = 300.0
+CENTER_X = 0
+CENTER_Y = 0
+CENTER_Z = 0
+UP_X = 0
+UP_Y = 1
+UP_Z = 0
+# Variables para dibujar los ejes del sistema
+X_MIN = -500
+X_MAX = 500
+Y_MIN = -500
+Y_MAX = 500
+Z_MIN = -500
+Z_MAX = 500
+# Dimension del plano
+DimBoard = 200
+
+pygame.init()
+
+# Carro = Cubo(DimBoard, 1.0)
+cubos = []
+ncubos = 5
+
+#Basura
+basura = []
+nbasura = 10
+
+basurero = []
+
+
+
+
+# def loadTexture():
+#     textureSurface = pygame.image.load(
+#         'images/wood_texture.jpeg')  # Asegúrate de que 'wood_texture.jpg' esté en tu directorio
+#     textureData = pygame.image.tostring(textureSurface, "RGBA", 1)
+#     width = textureSurface.get_width()
+#     height = textureSurface.get_height()
+#
+#     glEnable(GL_TEXTURE_2D)
+#     texid = glGenTextures(1)
+#     glBindTexture(GL_TEXTURE_2D, texid)
+#     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData)
+#
+#     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+#     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+#     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+#     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+#
+#     return texid
+
+
+def Axis():
+    glShadeModel(GL_FLAT)
+    glLineWidth(3.0)
+    # X axis in red
+    glColor3f(1.0, 0.0, 0.0)
+    glBegin(GL_LINES)
+    glVertex3f(X_MIN, 0.0, 0.0)
+    glVertex3f(X_MAX, 0.0, 0.0)
+    glEnd()
+    # Y axis in green
+    glColor3f(0.0, 1.0, 0.0)
+    glBegin(GL_LINES)
+    glVertex3f(0.0, Y_MIN, 0.0)
+    glVertex3f(0.0, Y_MAX, 0.0)
+    glEnd()
+    # Z axis in blue
+    glColor3f(0.0, 0.0, 1.0)
+    glBegin(GL_LINES)
+    glVertex3f(0.0, 0.0, Z_MIN)
+    glVertex3f(0.0, 0.0, Z_MAX)
+    glEnd()
+    glLineWidth(1.0)
+
+
+def Init():
+    screen = pygame.display.set_mode(
+        (screen_width, screen_height), DOUBLEBUF | OPENGL)
+    pygame.display.set_caption("OpenGL: cubos")
+
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(FOVY, screen_width / screen_height, ZNEAR, ZFAR)
+
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    gluLookAt(EYE_X, EYE_Y, EYE_Z, CENTER_X, CENTER_Y, CENTER_Z, UP_X, UP_Y, UP_Z)
+    glClearColor(0, 0, 0, 0)
+    glEnable(GL_DEPTH_TEST)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    # loadTexture()
+    for i in range(nbasura):
+        basura.append(Basura(DimBoard, 1.0, 3.0))
+
+    basurero.append(Basurero(DimBoard, 20.0))
+
+    for i in range(ncubos):
+        cubos.append(Cubo(DimBoard, 1.0, 5.0, basura, basurero))
+
+
+
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    Axis()
+    # Activar el uso de texturas
+    glEnable(GL_TEXTURE_2D)
+    # glBindTexture(GL_TEXTURE_2D, loadTexture())
+    # Se dibuja el plano con textura de madera
+    glColor3f(0.5, 0.5, 0.5)  # Color blanco para que la textura se muestre en su color original
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 0.0);
+    glVertex3d(-DimBoard, 0, -DimBoard)
+    glTexCoord2f(1.0, 0.0);
+    glVertex3d(-DimBoard, 0, DimBoard)
+    glTexCoord2f(1.0, 1.0);
+    glVertex3d(DimBoard, 0, DimBoard)
+    glTexCoord2f(0.0, 1.0);
+    glVertex3d(DimBoard, 0, -DimBoard)
+    glEnd()
+    glDisable(GL_TEXTURE_2D)
+
+    for obj in basurero:
+        obj.draw()
+
+    # Se dibuja cubos
+    for obj in cubos:
+        obj.draw()
+        obj.update()
+
+    for obj in basura:
+        obj.draw()
+        obj.update()
+
+
+
+
+
+done = False
+Init()
+while not done:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+
+    display()
+
+    pygame.display.flip()
+    pygame.time.wait(10)
+
+pygame.quit()
