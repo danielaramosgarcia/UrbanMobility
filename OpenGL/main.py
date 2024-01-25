@@ -45,11 +45,11 @@ pygame.init()
 
 # Carro = Cubo(DimBoard, 1.0)
 cubos = []
-ncubos = 15
+ncubos = 5
 
 #Basura
 basura = []
-nbasura = 10
+nbasura = 30
 
 basurero = []
 

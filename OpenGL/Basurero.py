@@ -85,6 +85,6 @@ class Basurero:
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScaled(self.scale, self.scale, self.scale)
-        glColor3f(0.0, 0.0, 0.0)
+        glColor3f(0.0, 0.0, 1.0)
         self.drawFaces()
         glPopMatrix()

@@ -9,6 +9,7 @@ from OpenGL.GLUT import *
 import random
 import math
 import numpy as np
+import time
 
 
 
@@ -20,6 +21,7 @@ class Basura:
                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]])
         self.cubo = cubo
         self.basurero = basurero
+        self.pause_until = 0
         self.collision = 0
         self.scale = scale
         self.firstCollision = False
@@ -44,28 +46,35 @@ class Basura:
         self.Direction[2] *= vel
 
     def update(self):
+        if time.time() < self.pause_until:
+            self.Position[1] = 100.0
+            return
         self.collisionDetection()
+        
+        
         if not self.firstCollision:
             return
-        if self.collision:
-            self.Position[0] = 0.0
-            self.Position[2] = 0.0
-        else:
-            d = 1
-            # detecc de que el objeto no se salga del area de navegacion
-            new_x = self.Position[0] + self.Direction[0]
-            new_z = self.Position[2] + self.Direction[2]
-            if (abs(new_x) <= self.DimBoard):
-                self.Position[0] = new_x
-            else:
-                self.Direction[0] *= -1.0
-                self.Position[0] += self.Direction[0]
+        
+        
+        # if self.collision:
+        #     self.Position[0] = 0.0
+        #     self.Position[2] = 0.0
+        # else:
+        #     d = 1
+        #     # detecc de que el objeto no se salga del area de navegacion
+        #     new_x = self.Position[0] + self.Direction[0]
+        #     new_z = self.Position[2] + self.Direction[2]
+        #     if (abs(new_x) <= self.DimBoard):
+        #         self.Position[0] = new_x
+        #     else:
+        #         self.Direction[0] *= -1.0
+        #         self.Position[0] += self.Direction[0]
 
-            if (abs(new_z) <= self.DimBoard):
-                self.Position[2] = new_z
-            else:
-                self.Direction[2] *= -1.0
-                self.Position[2] += self.Direction[2]
+        #     if (abs(new_z) <= self.DimBoard):
+        #         self.Position[2] = new_z
+        #     else:
+        #         self.Direction[2] *= -1.0
+        #         self.Position[2] += self.Direction[2]
 
     def drawFaces(self):
         glBegin(GL_QUADS)
@@ -116,18 +125,18 @@ class Basura:
     def collisionDetection(self):
         # Revisar por colision contra cubo
         for obj in self.cubo:
-            self.hasCollided = True
-            self.Position[1] = 10.0
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d = math.sqrt(d_x * d_x + d_z * d_z)
             if d - (self.radio + obj.radio) < 0.0:
                 # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
-                self.firstCollision = True 
                 newdir_x = -self.Position[0]
                 newdir_z = -self.Position[2]
                 m = math.sqrt(newdir_x ** 2 + newdir_z ** 2)
                 self.Direction = [(newdir_x / m), 0, (newdir_z / m)]
+                if self.firstCollision == False:
+                    self.pause_until = time.time() + 1.8
+                    self.firstCollision = True
         for obj in self.basurero:
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]

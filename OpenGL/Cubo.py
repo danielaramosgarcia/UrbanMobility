@@ -9,6 +9,7 @@ from OpenGL.GLUT import *
 import random
 import math
 import numpy as np
+import time
 
 
 class Cubo:
@@ -16,10 +17,11 @@ class Cubo:
     def __init__(self, dim, vel, scale, basura, basurero):
         self.points = np.array([[-1.0, -0.5, 1.5], [1.0, -0.5, 1.5], [1.0, -0.5, -1.5], [-1.0, -0.5, -1.5],
             [-1.0, 0.5, 1.5], [1.0, 0.5, 1.5], [1.0, 0.5, -1.5], [-1.0, 0.5, -1.5]])
-
+        self.pause_until = 0
         self.minheight = -1.0
         self.maxheight = 3.0
         self.collision = 0
+        self.firstCollision = False
         self.scale = scale
         self.radio = math.sqrt(self.scale * self.scale + self.scale * self.scale)
         self.basura = basura
@@ -44,8 +46,12 @@ class Cubo:
         self.Direction[2] *= vel
 
     def update(self):
+        if time.time() < self.pause_until:
+            return 
         self.collisionDetection()
-        if not self.collision:
+        # if not self.firstCollision:
+        #     return
+        if not self.collision: # aqui puede ser and !self.firstCollision
             new_x = self.Position[0] + self.Direction[0]
             new_z = self.Position[2] + self.Direction[2]
 
@@ -284,13 +290,18 @@ class Cubo:
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScaled(self.scale, self.scale, self.scale)
         glColor3f(0.0, 0.9, 0.0)
+        glRotatef(180, 0, 1, 0)
+        # Calcular el ángulo de rotación
+        rotation_angle = math.atan2(self.Direction[2], self.Direction[0]) * 180 / math.pi
+        # Normalizar el ángulo de rotación
+        rotation_angle = rotation_angle % 360
+        # Rotar el cubo para que su frente apunte en la dirección de movimiento
+        glRotatef(rotation_angle, 0, 1, 0)
         self.drawFaces()
         self.drawPrisma()
         self.drawBrazos()
-        
         # Agregar prisma gris
         self.drawPrismaCabina()
-        
         # Agregar prisma gris como techo
         glColor3f(0.0, 0.0, 0.0)  # Color del techo negro
         self.drawTecho()
@@ -299,16 +310,19 @@ class Cubo:
     def collisionDetection(self):
     #Revisar por colision contra basurero y/o basura
         for obj in self.basura:
+            print( obj.Position , self.Position )
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d_c = math.sqrt(d_x * d_x + d_z * d_z)
             if d_c - (self.radio + obj.radio) < 0.0:
-                #  self.collision = 1
                 # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
                 newdir_x = -self.Position[0]
                 newdir_z = -self.Position[2]
                 m = math.sqrt(newdir_x ** 2 + newdir_z  ** 2)
                 self.Direction = [(newdir_x / m), 0, (newdir_z / m)]
+                if self.firstCollision == False:
+                    self.pause_until = time.time() + 2  # Pausar el cubo por un segundo
+                    self.firstCollision == True
         for obj in self.basurero:
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
