@@ -13,7 +13,7 @@ sys.path.append('../../../Desktop/Graficas')
 from Cubo import Cubo
 from Basura import Basura
 from Basurero import Basurero
-
+#
 screen_width = 500
 screen_height = 500
 # vc para el obser.
@@ -131,34 +131,97 @@ def Init():
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     Axis()
+
+    # Establecer el modo de relleno para el plano
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
     # Activar el uso de texturas
     glEnable(GL_TEXTURE_2D)
     # glBindTexture(GL_TEXTURE_2D, loadTexture())
     # Se dibuja el plano con textura de madera
     glColor3f(0.5, 0.5, 0.5)  # Color blanco para que la textura se muestre en su color original
     glBegin(GL_QUADS)
-    glTexCoord2f(0.0, 0.0);
+    glTexCoord2f(0.0, 0.0)
     glVertex3d(-DimBoard, 0, -DimBoard)
-    glTexCoord2f(1.0, 0.0);
+    glTexCoord2f(1.0, 0.0)
     glVertex3d(-DimBoard, 0, DimBoard)
-    glTexCoord2f(1.0, 1.0);
+    glTexCoord2f(1.0, 1.0)
     glVertex3d(DimBoard, 0, DimBoard)
-    glTexCoord2f(0.0, 1.0);
+    glTexCoord2f(0.0, 1.0)
     glVertex3d(DimBoard, 0, -DimBoard)
     glEnd()
     glDisable(GL_TEXTURE_2D)
 
-    for obj in basurero:
-        obj.draw()
+    # Restaurar el modo de línea para otros elementos
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-    # Se dibuja cubos
+    # Dibujar paredes más altas
+    glColor3f(0.8, 0.8, 0.8)  # Color gris claro para las paredes
+
+    # Establecer el modo de relleno para las paredes
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
+    # Pared frontal
+    glBegin(GL_QUADS)
+    glVertex3d(-DimBoard, 30, DimBoard)
+    glVertex3d(DimBoard, 30, DimBoard)
+    glVertex3d(DimBoard, 0, DimBoard)
+    glVertex3d(-DimBoard, 0, DimBoard)
+    glEnd()
+
+    # Pared trasera
+    glBegin(GL_QUADS)
+    glVertex3d(-DimBoard, 30, -DimBoard)
+    glVertex3d(DimBoard, 30, -DimBoard)
+    glVertex3d(DimBoard, 0, -DimBoard)
+    glVertex3d(-DimBoard, 0, -DimBoard)
+    glEnd()
+
+    # Pared izquierda
+    glBegin(GL_QUADS)
+    glVertex3d(-DimBoard, 30, -DimBoard)
+    glVertex3d(-DimBoard, 30, DimBoard)
+    glVertex3d(-DimBoard, 0, DimBoard)
+    glVertex3d(-DimBoard, 0, -DimBoard)
+    glEnd()
+
+    # Pared derecha
+    glBegin(GL_QUADS)
+    glVertex3d(DimBoard, 30, -DimBoard)
+    glVertex3d(DimBoard, 30, DimBoard)
+    glVertex3d(DimBoard, 0, DimBoard)
+    glVertex3d(DimBoard, 0, -DimBoard)
+    glEnd()
+
+    # Dibujar puerta de color café fuera del plano
+    glColor3f(0.4, 0.2, 0.0)  # Color café oscuro para la puerta
+    glBegin(GL_QUADS)
+    glVertex3d(-50, 0, DimBoard + 10)  # Ajustar la posición en Z para colocar la puerta fuera del plano
+    glVertex3d(-50, 0, DimBoard - 20)  # Ajustar la posición en Z para colocar la puerta fuera del plano
+    glVertex3d(50, 0, DimBoard - 20)   # Ajustar la posición en Z para colocar la puerta fuera del plano
+    glVertex3d(50, 0, DimBoard + 10)   # Ajustar la posición en Z para colocar la puerta fuera del plano
+    glEnd()
+
+    # Restaurar el modo de línea para otros elementos
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
+    # Dibujar cubos con relleno
+    glColor3f(0.2, 0.4, 0.6)  # Color azul para los cubos
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     for obj in cubos:
         obj.draw()
         obj.update()
 
+    for obj in basurero:
+        obj.draw()
+
     for obj in basura:
         obj.draw()
         obj.update()
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+
+
 
 
 
