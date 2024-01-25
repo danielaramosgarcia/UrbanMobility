@@ -130,7 +130,7 @@ def Init():
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    Axis()
+    # Axis()
 
     # Establecer el modo de relleno para el plano
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
