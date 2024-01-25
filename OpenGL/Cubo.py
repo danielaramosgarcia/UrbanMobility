@@ -10,10 +10,12 @@ import random
 import math
 import numpy as np
 
+import time
+
 
 class Cubo:
 
-    def __init__(self, dim, vel, scale, basura, basurero):
+    def __init__(self, dim, vel, scale, basura, basurero, id):
         self.points = np.array([[-1.0, -0.5, 1.5], [1.0, -0.5, 1.5], [1.0, -0.5, -1.5], [-1.0, -0.5, -1.5],
             [-1.0, 0.5, 1.5], [1.0, 0.5, 1.5], [1.0, 0.5, -1.5], [-1.0, 0.5, -1.5]])
 
@@ -25,6 +27,11 @@ class Cubo:
         self.basura = basura
         self.basurero = basurero
         self.DimBoard = dim
+        self.canMoveAfter = 0
+        self.id = id
+        self.rotation = 0.0
+        self.centerAngle = 0.0
+        self.pickingTrashWithId = -1
         # Se inicializa una posicion aleatoria en el tablero
         self.Position = []
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
@@ -42,9 +49,16 @@ class Cubo:
         # Se cambia la maginitud del vector direccion
         self.Direction[0] *= vel
         self.Direction[2] *= vel
-
+        
     def update(self):
         self.collisionDetection()
+        if time.time() < self.canMoveAfter:
+            if self.rotation != self.centerAngle:
+                if self.rotation < self.centerAngle:
+                    self.rotation += 1
+                else:
+                    self.rotation -= 1
+            return
         if not self.collision:
             new_x = self.Position[0] + self.Direction[0]
             new_z = self.Position[2] + self.Direction[2]
@@ -53,12 +67,15 @@ class Cubo:
             if (abs(new_x) <= self.DimBoard):
                 self.Position[0] = new_x
             else:
+                self.pickingTrashWithId = -1
                 self.Direction[0] *= -1.0
                 self.Position[0] += self.Direction[0]
 
             if (abs(new_z) <= self.DimBoard):
                 self.Position[2] = new_z
             else:
+                self.pickingTrashWithId = -1
+                # print('carro Reboto ')
                 self.Direction[2] *= -1.0
                 self.Position[2] += self.Direction[2]
 
@@ -89,9 +106,6 @@ class Cubo:
             for vertex in face:
                 glVertex3fv(prisma_points[vertex])
         glEnd()
-        
-    
-    
     
     def drawBrazos(self):
         # Dimensiones de los brazos rectangulares
@@ -278,12 +292,12 @@ class Cubo:
                 glVertex3fv(prisma_gris_points[vertex])
         glEnd()
 
-
     def draw(self):
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScaled(self.scale, self.scale, self.scale)
         glColor3f(0.0, 0.9, 0.0)
+        glRotatef(self.rotation, 0, 1, 0)
         self.drawFaces()
         self.drawPrisma()
         self.drawBrazos()
@@ -297,12 +311,23 @@ class Cubo:
         glPopMatrix()
 
     def collisionDetection(self):
-    #Revisar por colision contra basurero y/o basura
+        #Revisar por colision contra basurero y/o basura
         for obj in self.basura:
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d_c = math.sqrt(d_x * d_x + d_z * d_z)
-            if d_c - (self.radio + obj.radio) < 0.0:
+            if (d_c - (self.radio + obj.radio) < 0.0 and self.Position[1] == obj.Position[1]  ):#osea cuando hay colision
+                # print('carro: ',d_c - (self.radio + obj.radio))
+                
+                # if (self.pickingTrashWithId != obj.id and self.pickingTrashWithId > 0) or obj.pickedUpBy > 0:
+                #     return
+                
+                #checamos que no se pare el tiempo ni pase nada cuando colisione con la basura que esta recogiendo
+                # if (self.pickingTrashWithId == obj.id ):
+                #     return
+                # self.pickingTrashWithId = obj.id
+                self.centerAngle  = calcular_rotacion( obj.Position, [0,0,0] )
+                self.canMoveAfter = time.time() + 2
                 #  self.collision = 1
                 # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
                 newdir_x = -self.Position[0]
@@ -314,8 +339,17 @@ class Cubo:
             d_z = self.Position[2] - obj.Position[2]
             d_c = math.sqrt(d_x * d_x + d_z * d_z)
             if d_c - (self.radio + obj.radio) < 0.0:
+                self.pickingTrashWithId = -1
                 self.Direction[0] *= -1.0
                 self.Direction[2] *= -1.0
 
 
+def calcular_rotacion(posicion_objeto, posicion_centro):
+        # Calcular la dirección hacia el centro
+        dx = posicion_centro[0] - posicion_objeto[0]
+        dz = posicion_centro[2] - posicion_objeto[2]
 
+        # Calcular el ángulo de rotación
+        angulo_rotacion = math.atan2(dz, dx) * 180 / math.pi
+
+        return angulo_rotacion

@@ -10,11 +10,13 @@ import random
 import math
 import numpy as np
 
+import time
+
 
 
 class Basura:
 
-    def __init__(self, dim, vel, scale, cubo, basurero):
+    def __init__(self, dim, vel, scale, cubo, basurero, id):
         # vertices del cubo
         self.points = np.array([[-1.0, -1.0, 1.0], [1.0, -1.0, 1.0], [1.0, -1.0, -1.0], [-1.0, -1.0, -1.0],
                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]])
@@ -23,8 +25,11 @@ class Basura:
         self.collision = 0
         self.scale = scale
         self.firstCollision = False
+        self.pickedUpBy = -1
         self.radio = math.sqrt(self.scale*self.scale + self.scale*self.scale)
         self.DimBoard = dim
+        self.canMoveAfter = 0
+        self.id = id
         # Se inicializa una posicion aleatoria en el tablero
         self.Position = []
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
@@ -45,6 +50,26 @@ class Basura:
 
     def update(self):
         self.collisionDetection()
+        
+        if time.time() < self.canMoveAfter:
+            # print("Basura " + str(self.id) + " picked up")
+            if self.Position[1] < 25:
+                self.Position[1] += 1
+                # detecc de que el objeto no se salga del area de navegacion
+                new_x = self.Position[0] + self.Direction[0]
+                new_z = self.Position[2] + self.Direction[2]
+                if (abs(new_x) <= self.DimBoard):
+                    self.Position[0] = new_x
+                else:
+                    self.Direction[0] *= -1.0
+                    self.Position[0] += self.Direction[0]
+
+                if (abs(new_z) <= self.DimBoard):
+                    self.Position[2] = new_z
+                else:
+                    self.Direction[2] *= -1.0
+                    self.Position[2] += self.Direction[2]
+            return
         if not self.firstCollision:
             return
         if self.collision:
@@ -116,12 +141,16 @@ class Basura:
     def collisionDetection(self):
         # Revisar por colision contra cubo
         for obj in self.cubo:
-            self.hasCollided = True
-            self.Position[1] = 10.0
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d = math.sqrt(d_x * d_x + d_z * d_z)
-            if d - (self.radio + obj.radio) < 0.0:
+            if (d - (self.radio + obj.radio) < 0.0) and self.Position[1] == obj.Position[1]: #osea cuando hay colision
+                # self.hasBeenPickedUp = True
+                # print('basura: ',d - (self.radio + obj.radio))
+                # if (self.pickedUpBy != obj.id and self.pickedUpBy >= 0) or obj.pickingTrashWithId >= 0:
+                #     return
+                # self.pickedUpBy = obj.id
+                self.canMoveAfter = time.time() + 2
                 # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
                 self.firstCollision = True 
                 newdir_x = -self.Position[0]

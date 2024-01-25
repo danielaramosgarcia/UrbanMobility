@@ -45,11 +45,11 @@ pygame.init()
 
 # Carro = Cubo(DimBoard, 1.0)
 cubos = []
-ncubos = 15
+ncubos = 3
 
 #Basura
 basura = []
-nbasura = 10
+nbasura = 50
 
 basurero = []
 
@@ -117,12 +117,12 @@ def Init():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     # loadTexture()
     for i in range(nbasura):
-        basura.append(Basura(DimBoard, 1.0, 3.0, cubos, basurero))
+        basura.append(Basura(DimBoard, 1.0, 3.0, cubos, basurero, i))
 
     basurero.append(Basurero(DimBoard, 20.0))
 
     for i in range(ncubos):
-        cubos.append(Cubo(DimBoard, 1.0, 5.0, basura, basurero))
+        cubos.append(Cubo(DimBoard, 1.0, 5.0, basura, basurero, i))
 
 
 
