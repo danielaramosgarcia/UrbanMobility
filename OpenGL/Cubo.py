@@ -16,7 +16,9 @@ class Cubo:
     def __init__(self, dim, vel, scale, basura, basurero):
         self.points = np.array([[-1.0, -0.5, 1.5], [1.0, -0.5, 1.5], [1.0, -0.5, -1.5], [-1.0, -0.5, -1.5],
             [-1.0, 0.5, 1.5], [1.0, 0.5, 1.5], [1.0, 0.5, -1.5], [-1.0, 0.5, -1.5]])
-        
+
+        self.minheight = -1.0
+        self.maxheight = 3.0
         self.collision = 0
         self.scale = scale
         self.radio = math.sqrt(self.scale * self.scale + self.scale * self.scale)
@@ -79,7 +81,8 @@ class Cubo:
             [-prisma_width / 2, prisma_height / 2, 2.0],
         ])
 
-        glColor3f(0.0, 1.0, 0.0)  # Color del prisma (verde en este caso)
+        # glColor3f(0.0, 1.0, 0.0)  # Color del prisma (verde en este caso)
+        glColor3f(0.0, 0.0, 0.0)
 
         glBegin(GL_QUADS)
         for face in [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]:
@@ -209,9 +212,9 @@ class Cubo:
 
     def drawTecho(self):
         # Dimensiones del prisma rectangular para el techo
-        techo_width = 1.5
-        techo_height = 0.4
-        techo_depth = 1.0
+        techo_width = 1.6
+        techo_height = 0.2
+        techo_depth = -1.6
 
         # Puntos del prisma (en la cara frontal del cubo)
         techo_points = np.array([
@@ -247,10 +250,14 @@ class Cubo:
         glEnd()
         
     def drawPrismaCabina(self):
-        # Dimensiones del prisma rectangular gris
-        prisma_gris_width = 1.5
+        # Dimensiones originales del prisma rectangular gris
+        # prisma_gris_width = 1.5
+        # prisma_gris_height = 4.0
+        # prisma_gris_depth = 1.0
+
+        prisma_gris_width = 1.9
         prisma_gris_height = 4.0
-        prisma_gris_depth = 1.0
+        prisma_gris_depth = 1.3
 
         # Puntos del prisma (en la cara frontal del cubo)
         prisma_gris_points = np.array([
@@ -265,7 +272,7 @@ class Cubo:
         ])
 
         glBegin(GL_QUADS)
-        glColor3f(0.0, 0.0, 1.0)  # Color del prisma gris
+        glColor3f(0.5, 0.5, 0.5)  # Color del prisma gris
         for face in [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]:
             for vertex in face:
                 glVertex3fv(prisma_gris_points[vertex])
@@ -276,7 +283,7 @@ class Cubo:
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScaled(self.scale, self.scale, self.scale)
-        glColor3f(1.0, 1.0, 1.0)
+        glColor3f(0.0, 0.9, 0.0)
         self.drawFaces()
         self.drawPrisma()
         self.drawBrazos()
@@ -285,9 +292,8 @@ class Cubo:
         self.drawPrismaCabina()
         
         # Agregar prisma gris como techo
-        glColor3f(0.0, 0.0, 0.0)  # Color del techo gris
+        glColor3f(0.0, 0.0, 0.0)  # Color del techo negro
         self.drawTecho()
-        
         glPopMatrix()
 
     def collisionDetection(self):
