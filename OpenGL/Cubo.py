@@ -10,14 +10,17 @@ import random
 import math
 import numpy as np
 
+from objloader import OBJ 
 
 class Cubo:
 
     def __init__(self, dim, vel, scale, basura, basurero):
-        self.points = np.array([[-1.0, -1.0, 1.0], [1.0, -1.0, 1.0], [1.0, -1.0, -1.0], [-1.0, -1.0, -1.0],
-                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]])
+        
+        obj_file_path = "forklift.obj"
+        self.obj = OBJ(obj_file_path)
         self.collision = 0
         self.scale = scale
+        self.radio = 1.0 
         self.radio = math.sqrt(self.scale * self.scale + self.scale * self.scale)
         self.basura = basura
         self.basurero = basurero
@@ -61,78 +64,12 @@ class Cubo:
 
 
     def drawFaces(self):
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[0])
-        glVertex3fv(self.points[1])
-        glVertex3fv(self.points[2])
-        glVertex3fv(self.points[3])
+        glBegin(GL_TRIANGLES)
+        for face in self.obj.faces:
+            for vertex_id in face:
+                glVertex3fv(self.obj.vertices[vertex_id])
         glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[4])
-        glVertex3fv(self.points[5])
-        glVertex3fv(self.points[6])
-        glVertex3fv(self.points[7])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[0])
-        glVertex3fv(self.points[1])
-        glVertex3fv(self.points[5])
-        glVertex3fv(self.points[4])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[1])
-        glVertex3fv(self.points[2])
-        glVertex3fv(self.points[6])
-        glVertex3fv(self.points[5])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[2])
-        glVertex3fv(self.points[3])
-        glVertex3fv(self.points[7])
-        glVertex3fv(self.points[6])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[3])
-        glVertex3fv(self.points[0])
-        glVertex3fv(self.points[4])
-        glVertex3fv(self.points[7])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[0])
-        glVertex3fv(self.points[1])
-        glVertex3fv(self.points[2])
-        glVertex3fv(self.points[3])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[4])
-        glVertex3fv(self.points[5])
-        glVertex3fv(self.points[6])
-        glVertex3fv(self.points[7])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[0])
-        glVertex3fv(self.points[1])
-        glVertex3fv(self.points[5])
-        glVertex3fv(self.points[4])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[1])
-        glVertex3fv(self.points[2])
-        glVertex3fv(self.points[6])
-        glVertex3fv(self.points[5])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[2])
-        glVertex3fv(self.points[3])
-        glVertex3fv(self.points[7])
-        glVertex3fv(self.points[6])
-        glEnd()
-        glBegin(GL_QUADS)
-        glVertex3fv(self.points[3])
-        glVertex3fv(self.points[0])
-        glVertex3fv(self.points[4])
-        glVertex3fv(self.points[7])
-        glEnd()
+        
 
 
 
@@ -164,5 +101,6 @@ class Cubo:
             if d_c - (self.radio + obj.radio) < 0.0:
                 self.Direction[0] *= -1.0
                 self.Direction[2] *= -1.0
+
 
 
