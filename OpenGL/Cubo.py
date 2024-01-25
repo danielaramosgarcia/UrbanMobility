@@ -215,14 +215,14 @@ class Cubo:
 
         # Puntos del prisma (en la cara frontal del cubo)
         techo_points = np.array([
-        [-techo_width / 2, 0.5 + 1.5, 1.5],            # Punto A
-        [techo_width / 2, 0.5 + 1.5, 1.5],             # Punto B
-        [techo_width / 2, 0.5 + techo_height + 1.5, 1.5],  # Punto C
-        [-techo_width / 2, 0.5 + techo_height + 1.5, 1.5], # Punto D
-        [-techo_width / 2, 0.5 + 1.5, 1.5 + techo_depth],  # Punto E
-        [techo_width / 2, 0.5 + 1.5, 1.5 + techo_depth],   # Punto F
-        [techo_width / 2, 0.5 + techo_height + 1.5, 1.5 + techo_depth],  # Punto G
-        [-techo_width / 2, 0.5 + techo_height + 1.5, 1.5 + techo_depth], # Punto H
+            [-techo_width / 2, 0.5 + 1.5, 1.5],            # Punto A
+            [techo_width / 2, 0.5 + 1.5, 1.5],             # Punto B
+            [techo_width / 2, 0.5 + techo_height + 1.5, 1.5],  # Punto C
+            [-techo_width / 2, 0.5 + techo_height + 1.5, 1.5], # Punto D
+            [-techo_width / 2, 0.5 + 1.5, 1.5 + techo_depth],  # Punto E
+            [techo_width / 2, 0.5 + 1.5, 1.5 + techo_depth],   # Punto F
+            [techo_width / 2, 0.5 + techo_height + 1.5, 1.5 + techo_depth],  # Punto G
+            [-techo_width / 2, 0.5 + techo_height + 1.5, 1.5 + techo_depth], # Punto H
         ])
 
         glBegin(GL_QUADS)
