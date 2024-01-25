@@ -166,4 +166,3 @@ class Cubo:
                 self.Direction[2] *= -1.0
 
 
-
