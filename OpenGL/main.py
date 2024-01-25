@@ -155,7 +155,7 @@ def display():
     # Restaurar el modo de línea para otros elementos
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-    # Dibujar paredes más altas
+    
     glColor3f(0.8, 0.8, 0.8)  # Color gris claro para las paredes
 
     # Establecer el modo de relleno para las paredes
@@ -205,7 +205,7 @@ def display():
     # Restaurar el modo de línea para otros elementos
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-    # Dibujar cubos con relleno
+    # Dibujar cubos con relleno 
     glColor3f(0.2, 0.4, 0.6)  # Color azul para los cubos
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     for obj in cubos:
@@ -220,11 +220,6 @@ def display():
         obj.update()
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-
-
-
-
-
 
 
 done = False
