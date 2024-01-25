@@ -16,7 +16,7 @@ class Cubo:
 
     def __init__(self, dim, vel, scale, basura, basurero):
         
-        obj_file_path = "forklift.obj"
+        obj_file_path = "lifter.obj"
         self.obj = OBJ(obj_file_path)
         self.collision = 0
         self.scale = scale
