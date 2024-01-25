@@ -117,7 +117,7 @@ def Init():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     # loadTexture()
     for i in range(nbasura):
-        basura.append(Basura(DimBoard, 1.0, 3.0))
+        basura.append(Basura(DimBoard, 1.0, 3.0, cubos, basurero))
 
     basurero.append(Basurero(DimBoard, 20.0))
 
@@ -130,7 +130,7 @@ def Init():
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    Axis()
+    # Axis()
     # Activar el uso de texturas
     glEnable(GL_TEXTURE_2D)
     # glBindTexture(GL_TEXTURE_2D, loadTexture())
