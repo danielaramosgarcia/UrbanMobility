@@ -10,17 +10,15 @@ import random
 import math
 import numpy as np
 
-from objloader import OBJ 
 
 class Cubo:
 
     def __init__(self, dim, vel, scale, basura, basurero):
+        self.points = np.array([[-1.0, -0.5, 1.5], [1.0, -0.5, 1.5], [1.0, -0.5, -1.5], [-1.0, -0.5, -1.5],
+            [-1.0, 0.5, 1.5], [1.0, 0.5, 1.5], [1.0, 0.5, -1.5], [-1.0, 0.5, -1.5]])
         
-        obj_file_path = "lifter.obj"
-        self.obj = OBJ(obj_file_path)
         self.collision = 0
         self.scale = scale
-        self.radio = 1.0 
         self.radio = math.sqrt(self.scale * self.scale + self.scale * self.scale)
         self.basura = basura
         self.basurero = basurero
@@ -63,14 +61,215 @@ class Cubo:
                 self.Position[2] += self.Direction[2]
 
 
-    def drawFaces(self):
-        glBegin(GL_TRIANGLES)
-        for face in self.obj.faces:
-            for vertex_id in face:
-                glVertex3fv(self.obj.vertices[vertex_id])
+    def drawPrisma(self):
+        # Dimensiones del prisma rectangular
+        prisma_width = 1.5
+        prisma_height = 3.0
+        prisma_depth = 1.0
+
+        # Puntos del prisma (en la cara frontal del cubo)
+        prisma_points = np.array([
+            [-prisma_width / 2, -prisma_height / 2, 1.0],
+            [prisma_width / 2, -prisma_height / 2, 1.0],
+            [prisma_width / 2, prisma_height / 2, 1.0],
+            [-prisma_width / 2, prisma_height / 2, 1.0],
+            [-prisma_width / 2, -prisma_height / 2, 2.0],
+            [prisma_width / 2, -prisma_height / 2, 2.0],
+            [prisma_width / 2, prisma_height / 2, 2.0],
+            [-prisma_width / 2, prisma_height / 2, 2.0],
+        ])
+
+        glColor3f(0.0, 1.0, 0.0)  # Color del prisma (verde en este caso)
+
+        glBegin(GL_QUADS)
+        for face in [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]:
+            for vertex in face:
+                glVertex3fv(prisma_points[vertex])
         glEnd()
         
+    
+    
+    
+    def drawBrazos(self):
+        # Dimensiones de los brazos rectangulares
+        brazo_width = 0.2
+        brazo_height = 0.5
+        brazo_depth = 2.0
 
+        # Puntos de los brazos (frente del prisma verde)
+        brazo_points1 = np.array([
+            [0.0, -1.0, 1.5],  # Punto inferior izquierdo
+            [brazo_width, -1.0, 1.5],  # Punto inferior derecho
+            [brazo_width, -1.0 + brazo_height, 1.5],  # Punto superior derecho
+            [0.0, -1.0 + brazo_height, 1.5],  # Punto superior izquierdo
+            [0.0, -1.0, 1.5 + brazo_depth],  # Punto inferior izquierdo trasero
+            [brazo_width, -1.0, 1.5 + brazo_depth],  # Punto inferior derecho trasero
+            [brazo_width, -1.0 + brazo_height, 1.5 + brazo_depth],  # Punto superior derecho trasero
+            [0.0, -1.0 + brazo_height, 1.5 + brazo_depth],  # Punto superior izquierdo trasero
+        ])
+
+        brazo_points2 = np.array([
+            [1.0 - brazo_width, -1.0, 1.5],  # Punto inferior izquierdo
+            [1.0, -1.0, 1.5],  # Punto inferior derecho
+            [1.0, -1.0 + brazo_height, 1.5],  # Punto superior derecho
+            [1.0 - brazo_width, -1.0 + brazo_height, 1.5],  # Punto superior izquierdo
+            [1.0 - brazo_width, -1.0, 1.5 + brazo_depth],  # Punto inferior izquierdo trasero
+            [1.0, -1.0, 1.5 + brazo_depth],  # Punto inferior derecho trasero
+            [1.0, -1.0 + brazo_height, 1.5 + brazo_depth],  # Punto superior derecho trasero
+            [1.0 - brazo_width, -1.0 + brazo_height, 1.5 + brazo_depth],  # Punto superior izquierdo trasero
+        ])
+
+        glColor3f(1.0, 0.0, 0.0)  # Color de los brazos (rojo en este caso)
+
+        glBegin(GL_QUADS)
+        for face in [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]:
+            for vertex in face:
+                glVertex3fv(brazo_points1[vertex])
+        glEnd()
+
+        glBegin(GL_QUADS)
+        for face in [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]:
+            for vertex in face:
+                glVertex3fv(brazo_points2[vertex])
+        glEnd()
+    
+    def drawFaces(self):
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[0])
+        glVertex3fv(self.points[1])
+        glVertex3fv(self.points[2])
+        glVertex3fv(self.points[3])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[4])
+        glVertex3fv(self.points[5])
+        glVertex3fv(self.points[6])
+        glVertex3fv(self.points[7])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[0])
+        glVertex3fv(self.points[1])
+        glVertex3fv(self.points[5])
+        glVertex3fv(self.points[4])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[1])
+        glVertex3fv(self.points[2])
+        glVertex3fv(self.points[6])
+        glVertex3fv(self.points[5])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[2])
+        glVertex3fv(self.points[3])
+        glVertex3fv(self.points[7])
+        glVertex3fv(self.points[6])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[3])
+        glVertex3fv(self.points[0])
+        glVertex3fv(self.points[4])
+        glVertex3fv(self.points[7])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[0])
+        glVertex3fv(self.points[1])
+        glVertex3fv(self.points[2])
+        glVertex3fv(self.points[3])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[4])
+        glVertex3fv(self.points[5])
+        glVertex3fv(self.points[6])
+        glVertex3fv(self.points[7])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[0])
+        glVertex3fv(self.points[1])
+        glVertex3fv(self.points[5])
+        glVertex3fv(self.points[4])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[1])
+        glVertex3fv(self.points[2])
+        glVertex3fv(self.points[6])
+        glVertex3fv(self.points[5])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[2])
+        glVertex3fv(self.points[3])
+        glVertex3fv(self.points[7])
+        glVertex3fv(self.points[6])
+        glEnd()
+        glBegin(GL_QUADS)
+        glVertex3fv(self.points[3])
+        glVertex3fv(self.points[0])
+        glVertex3fv(self.points[4])
+        glVertex3fv(self.points[7])
+        glEnd()
+
+    def drawTecho(self):
+        # Dimensiones del prisma rectangular para el techo
+        techo_width = 1.5
+        techo_height = 0.4
+        techo_depth = 1.0
+
+        # Puntos del prisma (en la cara frontal del cubo)
+        techo_points = np.array([
+        [-techo_width / 2, 0.5 + 1.5, 1.5],            # Punto A
+        [techo_width / 2, 0.5 + 1.5, 1.5],             # Punto B
+        [techo_width / 2, 0.5 + techo_height + 1.5, 1.5],  # Punto C
+        [-techo_width / 2, 0.5 + techo_height + 1.5, 1.5], # Punto D
+        [-techo_width / 2, 0.5 + 1.5, 1.5 + techo_depth],  # Punto E
+        [techo_width / 2, 0.5 + 1.5, 1.5 + techo_depth],   # Punto F
+        [techo_width / 2, 0.5 + techo_height + 1.5, 1.5 + techo_depth],  # Punto G
+        [-techo_width / 2, 0.5 + techo_height + 1.5, 1.5 + techo_depth], # Punto H
+        ])
+
+        glBegin(GL_QUADS)
+        glColor3f(0.0, 0.0, 0.0)  # Cambiar a color negro
+        # Caras frontales
+        for face in [(0, 1, 2, 3)]:
+            for vertex in face:
+                glVertex3fv(techo_points[vertex])
+        # Caras laterales
+        for face in [(0, 3, 7, 4), (1, 2, 6, 5), (0, 1, 5, 4), (2, 3, 7, 6)]:
+            for vertex in face:
+                glVertex3fv(techo_points[vertex])
+        glEnd()
+        
+        
+        # Extensión hacia atrás
+        glBegin(GL_QUADS)
+        # Caras laterales hacia atrás
+        for face in [(4, 5, 6, 7)]:
+            for vertex in face:
+                glVertex3fv(techo_points[vertex])
+        glEnd()
+        
+    def drawPrismaCabina(self):
+        # Dimensiones del prisma rectangular gris
+        prisma_gris_width = 1.5
+        prisma_gris_height = 4.0
+        prisma_gris_depth = 1.0
+
+        # Puntos del prisma (en la cara frontal del cubo)
+        prisma_gris_points = np.array([
+            [-prisma_gris_width / 2, -prisma_gris_height / 2, 0.0],
+            [prisma_gris_width / 2, -prisma_gris_height / 2, 0.0],
+            [prisma_gris_width / 2, prisma_gris_height / 2, 0.0],
+            [-prisma_gris_width / 2, prisma_gris_height / 2, 0.0],
+            [-prisma_gris_width / 2, -prisma_gris_height / 2, prisma_gris_depth],
+            [prisma_gris_width / 2, -prisma_gris_height / 2, prisma_gris_depth],
+            [prisma_gris_width / 2, prisma_gris_height / 2, prisma_gris_depth],
+            [-prisma_gris_width / 2, prisma_gris_height / 2, prisma_gris_depth],
+        ])
+
+        glBegin(GL_QUADS)
+        glColor3f(0.0, 0.0, 1.0)  # Color del prisma gris
+        for face in [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]:
+            for vertex in face:
+                glVertex3fv(prisma_gris_points[vertex])
+        glEnd()
 
 
     def draw(self):
@@ -79,6 +278,16 @@ class Cubo:
         glScaled(self.scale, self.scale, self.scale)
         glColor3f(1.0, 1.0, 1.0)
         self.drawFaces()
+        self.drawPrisma()
+        self.drawBrazos()
+        
+        # Agregar prisma gris
+        self.drawPrismaCabina()
+        
+        # Agregar prisma gris como techo
+        glColor3f(0.0, 0.0, 0.0)  # Color del techo gris
+        self.drawTecho()
+        
         glPopMatrix()
 
     def collisionDetection(self):
