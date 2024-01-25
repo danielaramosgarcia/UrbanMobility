@@ -117,6 +117,7 @@ class Basura:
         # Revisar por colision contra cubo
         for obj in self.cubo:
             self.hasCollided = True
+            self.Position[1] = 10.0
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d = math.sqrt(d_x * d_x + d_z * d_z)

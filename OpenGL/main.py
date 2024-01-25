@@ -160,10 +160,6 @@ def display():
         obj.draw()
         obj.update()
 
-
-
-
-
 done = False
 Init()
 while not done:
