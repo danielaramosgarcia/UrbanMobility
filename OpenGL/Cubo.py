@@ -28,6 +28,7 @@ class Cubo:
         self.basura = basura
         self.basurero = basurero
         self.DimBoard = dim
+        self.rotationAngle = 0.0
         # Se inicializa una posicion aleatoria en el tablero
         self.Position = []
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
@@ -45,6 +46,8 @@ class Cubo:
         # Se cambia la maginitud del vector direccion
         self.Direction[0] *= vel
         self.Direction[2] *= vel
+        self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
+        
 
     def update(self):
         self.collisionDetection()
@@ -58,12 +61,13 @@ class Cubo:
             else:
                 self.Direction[0] *= -1.0
                 self.Position[0] += self.Direction[0]
-
+            self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
             if (abs(new_z) <= self.DimBoard):
                 self.Position[2] = new_z
             else:
                 self.Direction[2] *= -1.0
                 self.Position[2] += self.Direction[2]
+                self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
         elif self.collision == 1:
             #Animación de subir brazos con la basura
             if self.currentHeight >= self.maxHeight:
@@ -82,12 +86,14 @@ class Cubo:
             else:
                 self.Direction[0] *= -1.0
                 self.Position[0] += self.Direction[0]
+                self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
 
             if (abs(new_z) <= self.DimBoard):
                 self.Position[2] = new_z
             else:
                 self.Direction[2] *= -1.0
                 self.Position[2] += self.Direction[2]
+                self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
         elif self.collision == 4:
             #Animación de bajar brazos, dejar basura en el basurero y vuelta
             if self.currentHeight <= self.minHeight:
@@ -134,7 +140,7 @@ class Cubo:
         if self.collision == 1 and self.currentHeight < self.maxHeight:
             self.brazoHeight += 0.05
             self.currentHeight = -1 + self.brazoHeight
-            print(self.currentHeight)
+            # print(self.currentHeight)
         elif self.collision == 4 and self.currentHeight > self.minHeight:
             self.brazoHeight -= 0.05
             self.currentHeight = -1 + self.brazoHeight
@@ -323,6 +329,7 @@ class Cubo:
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScaled(self.scale, self.scale, self.scale)
         glColor3f(0.0, 0.9, 0.0)
+        glRotatef(self.rotationAngle, 0.0, 1.0, 0.0)
         self.drawFaces()
         self.drawPrisma()
         self.drawBrazos()
@@ -349,7 +356,9 @@ class Cubo:
                     newdir_x = -self.Position[0]
                     newdir_z = -self.Position[2]
                     m = math.sqrt(newdir_x ** 2 + newdir_z  ** 2)
-                    self.Direction = [(newdir_x / m), 0, (newdir_z / m)]
+                    new_direction = [(newdir_x / m), 0, (newdir_z / m)]
+                    self.Direction = new_direction
+                    self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
         for obj in self.basurero:
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
@@ -360,6 +369,7 @@ class Cubo:
                     self.collision = 4
                 self.Direction[0] *= -1.0
                 self.Direction[2] *= -1.0
+                self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
 
 
 # la direccion actual, la comparamos con la nueva, y hacemos 
