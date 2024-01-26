@@ -1,6 +1,14 @@
 import pygame
 from pygame.locals import *
 
+
+# pero ya se que pex:
+
+# •⁠  ⁠⁠Poner Flags de que la basura ya fue recogida - Check, hacer tests
+# .  Cambiar a que el carrito mueva a la basura
+
+# •⁠  ⁠⁠Cambiar a que este este volteando siempre al frente
+
 # Cargamos las bibliotecas de OpenGL
 from OpenGL.GL import *
 from OpenGL.GLU import *

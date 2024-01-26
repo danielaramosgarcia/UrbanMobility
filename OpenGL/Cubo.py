@@ -362,4 +362,6 @@ class Cubo:
                 self.Direction[2] *= -1.0
 
 
+# la direccion actual, la comparamos con la nueva, y hacemos 
+# lo de pitagoras para sacar el angulo en el que rota
 
