@@ -17,8 +17,11 @@ class Cubo:
         self.points = np.array([[-1.0, -0.5, 1.5], [1.0, -0.5, 1.5], [1.0, -0.5, -1.5], [-1.0, -0.5, -1.5],
             [-1.0, 0.5, 1.5], [1.0, 0.5, 1.5], [1.0, 0.5, -1.5], [-1.0, 0.5, -1.5]])
 
-        self.minheight = -1.0
-        self.maxheight = 3.0
+        self.basuraCargada = 0
+        self.brazoHeight = 0.5
+        self.currentHeight = 0
+        self.minHeight = -0.5
+        self.maxHeight = 2.0
         self.collision = 0
         self.scale = scale
         self.radio = math.sqrt(self.scale * self.scale + self.scale * self.scale)
@@ -45,7 +48,7 @@ class Cubo:
 
     def update(self):
         self.collisionDetection()
-        if not self.collision:
+        if self.collision == 0:
             new_x = self.Position[0] + self.Direction[0]
             new_z = self.Position[2] + self.Direction[2]
 
@@ -61,6 +64,35 @@ class Cubo:
             else:
                 self.Direction[2] *= -1.0
                 self.Position[2] += self.Direction[2]
+        elif self.collision == 1:
+            #Animación de subir brazos con la basura
+            if self.currentHeight >= self.maxHeight:
+                self.collision = 2
+        elif self.collision == 2:
+            #Animación de vuelta
+            self.collision = 3
+            print("Collision detected")
+        elif self.collision == 3:
+            #Movimiento hacia el basurero
+            new_x = self.Position[0] + self.Direction[0]
+            new_z = self.Position[2] + self.Direction[2]
+
+            if (abs(new_x) <= self.DimBoard):
+                self.Position[0] = new_x
+            else:
+                self.Direction[0] *= -1.0
+                self.Position[0] += self.Direction[0]
+
+            if (abs(new_z) <= self.DimBoard):
+                self.Position[2] = new_z
+            else:
+                self.Direction[2] *= -1.0
+                self.Position[2] += self.Direction[2]
+        elif self.collision == 4:
+            #Animación de bajar brazos, dejar basura en el basurero y vuelta
+            if self.currentHeight <= self.minHeight:
+                self.collision = 0
+            print("Collision detected")
 
 
     def drawPrisma(self):
@@ -99,27 +131,34 @@ class Cubo:
         brazo_height = 0.5
         brazo_depth = 2.0
 
+        if self.collision == 1 and self.currentHeight < self.maxHeight:
+            self.brazoHeight += 0.05
+            self.currentHeight = -1 + self.brazoHeight
+            print(self.currentHeight)
+        elif self.collision == 4 and self.currentHeight > self.minHeight:
+            self.brazoHeight -= 0.05
+            self.currentHeight = -1 + self.brazoHeight
         # Puntos de los brazos (frente del prisma verde)
         brazo_points1 = np.array([
-            [0.0, -1.0, 1.5],  # Punto inferior izquierdo
-            [brazo_width, -1.0, 1.5],  # Punto inferior derecho
-            [brazo_width, -1.0 + brazo_height, 1.5],  # Punto superior derecho
-            [0.0, -1.0 + brazo_height, 1.5],  # Punto superior izquierdo
-            [0.0, -1.0, 1.5 + brazo_depth],  # Punto inferior izquierdo trasero
-            [brazo_width, -1.0, 1.5 + brazo_depth],  # Punto inferior derecho trasero
-            [brazo_width, -1.0 + brazo_height, 1.5 + brazo_depth],  # Punto superior derecho trasero
-            [0.0, -1.0 + brazo_height, 1.5 + brazo_depth],  # Punto superior izquierdo trasero
+            [0.0, -1.5 + self.brazoHeight, 1.5],  # Punto inferior izquierdo
+            [brazo_width, -1.5 + self.brazoHeight, 1.5],  # Punto inferior derecho
+            [brazo_width, -1.0 + self.brazoHeight, 1.5],  # Punto superior derecho
+            [0.0, -1.0 + self.brazoHeight, 1.5],  # Punto superior izquierdo
+            [0.0, -1.5 + self.brazoHeight, 1.5 + brazo_depth],  # Punto inferior izquierdo trasero
+            [brazo_width, -1.5 + self.brazoHeight, 1.5 + brazo_depth],  # Punto inferior derecho trasero
+            [brazo_width, -1.0 + self.brazoHeight, 1.5 + brazo_depth],  # Punto superior derecho trasero
+            [0.0, -1.0 + self.brazoHeight, 1.5 + brazo_depth],  # Punto superior izquierdo trasero
         ])
 
         brazo_points2 = np.array([
-            [1.0 - brazo_width, -1.0, 1.5],  # Punto inferior izquierdo
-            [1.0, -1.0, 1.5],  # Punto inferior derecho
-            [1.0, -1.0 + brazo_height, 1.5],  # Punto superior derecho
-            [1.0 - brazo_width, -1.0 + brazo_height, 1.5],  # Punto superior izquierdo
-            [1.0 - brazo_width, -1.0, 1.5 + brazo_depth],  # Punto inferior izquierdo trasero
-            [1.0, -1.0, 1.5 + brazo_depth],  # Punto inferior derecho trasero
-            [1.0, -1.0 + brazo_height, 1.5 + brazo_depth],  # Punto superior derecho trasero
-            [1.0 - brazo_width, -1.0 + brazo_height, 1.5 + brazo_depth],  # Punto superior izquierdo trasero
+            [1.0 - brazo_width,-1.5 + self.brazoHeight, 1.5],  # Punto inferior izquierdo
+            [1.0, -1.5 + self.brazoHeight, 1.5],  # Punto inferior derecho
+            [1.0, -1.0 + self.brazoHeight, 1.5],  # Punto superior derecho
+            [1.0 - brazo_width, -1.0 + self.brazoHeight, 1.5],  # Punto superior izquierdo
+            [1.0 - brazo_width, -1.5 + self.brazoHeight, 1.5 + brazo_depth],  # Punto inferior izquierdo trasero
+            [1.0, -1.5 + self.brazoHeight, 1.5 + brazo_depth],  # Punto inferior derecho trasero
+            [1.0, -1.0 + self.brazoHeight, 1.5 + brazo_depth],  # Punto superior derecho trasero
+            [1.0 - brazo_width, -1.0 + self.brazoHeight, 1.5 + brazo_depth],  # Punto superior izquierdo trasero
         ])
 
         glColor3f(1.0, 0.0, 0.0)  # Color de los brazos (rojo en este caso)
@@ -297,23 +336,28 @@ class Cubo:
         glPopMatrix()
 
     def collisionDetection(self):
-    #Revisar por colision contra basurero y/o basura
-        for obj in self.basura:
-            d_x = self.Position[0] - obj.Position[0]
-            d_z = self.Position[2] - obj.Position[2]
-            d_c = math.sqrt(d_x * d_x + d_z * d_z)
-            if d_c - (self.radio + obj.radio) < 0.0:
-                #  self.collision = 1
-                # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
-                newdir_x = -self.Position[0]
-                newdir_z = -self.Position[2]
-                m = math.sqrt(newdir_x ** 2 + newdir_z  ** 2)
-                self.Direction = [(newdir_x / m), 0, (newdir_z / m)]
+    #Revisar por colision contra basura mientras no se este cargando nada
+        if self.collision == 0:
+            for obj in self.basura:
+                d_x = self.Position[0] - obj.Position[0]
+                d_z = self.Position[2] - obj.Position[2]
+                d_c = math.sqrt(d_x * d_x + d_z * d_z)
+                if d_c - (self.radio + obj.radio) < 0.0 and obj.collision != 1:
+                    self.collision = 1
+                    obj.collision = 1
+                    # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
+                    newdir_x = -self.Position[0]
+                    newdir_z = -self.Position[2]
+                    m = math.sqrt(newdir_x ** 2 + newdir_z  ** 2)
+                    self.Direction = [(newdir_x / m), 0, (newdir_z / m)]
         for obj in self.basurero:
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d_c = math.sqrt(d_x * d_x + d_z * d_z)
             if d_c - (self.radio + obj.radio) < 0.0:
+                #Revisar si esta llevando basura
+                if self.collision == 3:
+                    self.collision = 4
                 self.Direction[0] *= -1.0
                 self.Direction[2] *= -1.0
 
