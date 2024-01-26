@@ -10,11 +10,11 @@ import random
 import math
 import numpy as np
 
-
+import time
 
 class Basura:
 
-    def __init__(self, dim, vel, scale, cubo, basurero):
+    def __init__(self, dim, vel, scale, cubo, basurero, id):
         # vertices del cubo
         self.points = np.array([[-1.0, -1.0, 1.0], [1.0, -1.0, 1.0], [1.0, -1.0, -1.0], [-1.0, -1.0, -1.0],
                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]])
@@ -25,6 +25,8 @@ class Basura:
         self.firstCollision = False
         self.radio = math.sqrt(self.scale*self.scale + self.scale*self.scale)
         self.DimBoard = dim
+        self.isLifting = 0
+        self.isLookingForRide = True
         # Se inicializa una posicion aleatoria en el tablero
         self.Position = []
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
@@ -45,27 +47,43 @@ class Basura:
 
     def update(self):
         self.collisionDetection()
-        if not self.firstCollision:
+        if self.isLifting > time.time():
+            
+            if self.Position[0] > 0.0:
+                self.Position[0] -= 0.1
+            else:
+                self.Position[0] += 0.1
+                
+            if self.Position[2] > 0.0:
+                self.Position[2] -= 0.1
+            else:
+                self.Position[2] += 0.1
+                
+            if self.Position[1] < 15.0:
+                self.Position[1] += 1
             return
-        if self.collision:
-            self.Position[0] = 0.0
-            self.Position[2] = 0.0
         else:
-            d = 1
-            # detecc de que el objeto no se salga del area de navegacion
-            new_x = self.Position[0] + self.Direction[0]
-            new_z = self.Position[2] + self.Direction[2]
-            if (abs(new_x) <= self.DimBoard):
-                self.Position[0] = new_x
+            if not self.firstCollision:
+                return
+            if self.collision:
+                self.Position[0] = 0.0
+                self.Position[2] = 0.0
             else:
-                self.Direction[0] *= -1.0
-                self.Position[0] += self.Direction[0]
+                d = 1
+                # detecc de que el objeto no se salga del area de navegacion
+                new_x = self.Position[0] + self.Direction[0]
+                new_z = self.Position[2] + self.Direction[2]
+                if (abs(new_x) <= self.DimBoard):
+                    self.Position[0] = new_x
+                else:
+                    self.Direction[0] *= -1.0
+                    self.Position[0] += self.Direction[0]
 
-            if (abs(new_z) <= self.DimBoard):
-                self.Position[2] = new_z
-            else:
-                self.Direction[2] *= -1.0
-                self.Position[2] += self.Direction[2]
+                if (abs(new_z) <= self.DimBoard):
+                    self.Position[2] = new_z
+                else:
+                    self.Direction[2] *= -1.0
+                    self.Position[2] += self.Direction[2]
 
     def drawFaces(self):
         glBegin(GL_QUADS)
@@ -117,11 +135,12 @@ class Basura:
         # Revisar por colision contra cubo
         for obj in self.cubo:
             self.hasCollided = True
-            self.Position[1] = 10.0
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d = math.sqrt(d_x * d_x + d_z * d_z)
-            if d - (self.radio + obj.radio) < 0.0:
+            if (d - (self.radio + obj.radio) < 0.0) and self.isLifting == 0:
+                self.isLifting = time.time() + 2
+                self.isLookingForRide = False
                 # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
                 self.firstCollision = True 
                 newdir_x = -self.Position[0]

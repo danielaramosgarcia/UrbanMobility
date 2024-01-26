@@ -10,10 +10,11 @@ import random
 import math
 import numpy as np
 
+import time
 
 class Cubo:
 
-    def __init__(self, dim, vel, scale, basura, basurero):
+    def __init__(self, dim, vel, scale, basura, basurero, id):
         self.points = np.array([[-1.0, -0.5, 1.5], [1.0, -0.5, 1.5], [1.0, -0.5, -1.5], [-1.0, -0.5, -1.5],
             [-1.0, 0.5, 1.5], [1.0, 0.5, 1.5], [1.0, 0.5, -1.5], [-1.0, 0.5, -1.5]])
 
@@ -21,10 +22,13 @@ class Cubo:
         self.maxheight = 3.0
         self.collision = 0
         self.scale = scale
+        self.centerAngle = 0.0
         self.radio = math.sqrt(self.scale * self.scale + self.scale * self.scale)
         self.basura = basura
         self.basurero = basurero
         self.DimBoard = dim
+        self.rotationAngle = 0.0
+        self.isRotating = 0
         # Se inicializa una posicion aleatoria en el tablero
         self.Position = []
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
@@ -45,7 +49,12 @@ class Cubo:
 
     def update(self):
         self.collisionDetection()
-        if not self.collision:
+        if self.rotationAngle != self.centerAngle and self.isRotating > time.time():
+                if self.rotationAngle < self.centerAngle:
+                    self.rotationAngle += 1
+                else:
+                    self.rotationAngle -= 1
+        if not self.collision and self.isRotating < time.time():
             new_x = self.Position[0] + self.Direction[0]
             new_z = self.Position[2] + self.Direction[2]
 
@@ -53,12 +62,14 @@ class Cubo:
             if (abs(new_x) <= self.DimBoard):
                 self.Position[0] = new_x
             else:
+                self.isRotating = 0
                 self.Direction[0] *= -1.0
                 self.Position[0] += self.Direction[0]
 
             if (abs(new_z) <= self.DimBoard):
                 self.Position[2] = new_z
             else:
+                self.isRotating = 0
                 self.Direction[2] *= -1.0
                 self.Position[2] += self.Direction[2]
 
@@ -284,6 +295,7 @@ class Cubo:
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScaled(self.scale, self.scale, self.scale)
         glColor3f(0.0, 0.9, 0.0)
+        glRotatef(self.rotationAngle, 0, 1, 0)
         self.drawFaces()
         self.drawPrisma()
         self.drawBrazos()
@@ -302,11 +314,13 @@ class Cubo:
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
             d_c = math.sqrt(d_x * d_x + d_z * d_z)
-            if d_c - (self.radio + obj.radio) < 0.0:
+            if ((d_c - (self.radio + obj.radio) < 0.0) and self.isRotating == 0): # and obj.isLifting == 0:
                 #  self.collision = 1
                 # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
+                self.isRotating = time.time() + 2
                 newdir_x = -self.Position[0]
                 newdir_z = -self.Position[2]
+                self.centerAngle = calcular_rotacion(self)
                 m = math.sqrt(newdir_x ** 2 + newdir_z  ** 2)
                 self.Direction = [(newdir_x / m), 0, (newdir_z / m)]
         for obj in self.basurero:
@@ -316,6 +330,17 @@ class Cubo:
             if d_c - (self.radio + obj.radio) < 0.0:
                 self.Direction[0] *= -1.0
                 self.Direction[2] *= -1.0
+                self.isRotating = 0
 
+def calcular_rotacion(self):
+    # Calcular la dirección hacia el centro
+    dx = -self.Position[0]
+    dz = -self.Position[2]
 
+    # Calcular el ángulo de rotación
+    angulo_rotacion = math.atan2(dz, dx) * 180 / math.pi
 
+    if angulo_rotacion < 0:
+        angulo_rotacion += 360
+
+    return angulo_rotacion
