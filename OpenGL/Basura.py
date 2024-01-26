@@ -14,7 +14,7 @@ import numpy as np
 
 class Basura:
 
-    def __init__(self, dim, vel, scale, cubo, basurero):
+    def __init__(self, dim, scale, cubo, basurero):
         # vertices del cubo
         self.points = np.array([[-1.0, -1.0, 1.0], [1.0, -1.0, 1.0], [1.0, -1.0, -1.0], [-1.0, -1.0, -1.0],
                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]])
@@ -30,18 +30,11 @@ class Basura:
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
         self.Position.append(5.0)
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
-        # Se inicializa un vector de direccion aleatorio
+        # Se inicializa un vector de direccion en 0
         self.Direction = []
-        self.Direction.append(random.random())
-        self.Direction.append(5.0)
-        self.Direction.append(random.random())
-        # Se normaliza el vector de direccion
-        m = math.sqrt(self.Direction[0] * self.Direction[0] + self.Direction[2] * self.Direction[2])
-        self.Direction[0] /= m
-        self.Direction[2] /= m
-        # Se cambia la maginitud del vector direccion
-        self.Direction[0] *= vel
-        self.Direction[2] *= vel
+        self.Direction.append(0.0)
+        self.Direction.append(0.0)
+        self.Direction.append(0.0)
 
     def update(self):
         hola = 0
@@ -53,20 +46,20 @@ class Basura:
         #     self.Position[2] = 0.0
         # else:
         #     d = 1
-        #     # detecc de que el objeto no se salga del area de navegacion
-        #     new_x = self.Position[0] + self.Direction[0]
-        #     new_z = self.Position[2] + self.Direction[2]
-        #     if (abs(new_x) <= self.DimBoard):
-        #         self.Position[0] = new_x
-        #     else:
-        #         self.Direction[0] *= -1.0
-        #         self.Position[0] += self.Direction[0]
+        if self.Position[0] != 0.0 and self.Position[2] != 0.0:
+            new_x = self.Position[0] + self.Direction[0]
+            new_z = self.Position[2] + self.Direction[2]
+            if (abs(new_x) <= self.DimBoard):
+                self.Position[0] = new_x
+            else:
+                self.Direction[0] *= -0.9
+                self.Position[0] += self.Direction[0]
 
-        #     if (abs(new_z) <= self.DimBoard):
-        #         self.Position[2] = new_z
-        #     else:
-        #         self.Direction[2] *= -1.0
-        #         self.Position[2] += self.Direction[2]
+            if (abs(new_z) <= self.DimBoard):
+                self.Position[2] = new_z
+            else:
+                self.Direction[2] *= -0.9
+                self.Position[2] += self.Direction[2]
 
     def drawFaces(self):
         glBegin(GL_QUADS)

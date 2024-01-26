@@ -18,6 +18,7 @@ class Cubo:
             [-1.0, 0.5, 1.5], [1.0, 0.5, 1.5], [1.0, 0.5, -1.5], [-1.0, 0.5, -1.5]])
 
         self.basuraCargada = 0
+        self.basuraHeight = 0.3
         self.brazoHeight = 0.5
         self.currentHeight = 0
         self.minHeight = -0.5
@@ -75,7 +76,8 @@ class Cubo:
         elif self.collision == 2:
             #Animación de vuelta
             self.collision = 3
-            print("Collision detected")
+            #Una vez terminada la vuelta darle el mismo vector de direccion del carro a la basura
+            self.basura[self.basuraCargada].Direction = [self.Direction[0], self.Direction[1], self.Direction[2]]
         elif self.collision == 3:
             #Movimiento hacia el basurero
             new_x = self.Position[0] + self.Direction[0]
@@ -98,6 +100,7 @@ class Cubo:
             #Animación de bajar brazos, dejar basura en el basurero y vuelta
             if self.currentHeight <= self.minHeight:
                 self.collision = 0
+                self.basura[self.basuraCargada].Direction = [0.0,0.0,0.0]
             print("Collision detected")
 
 
@@ -140,10 +143,11 @@ class Cubo:
         if self.collision == 1 and self.currentHeight < self.maxHeight:
             self.brazoHeight += 0.05
             self.currentHeight = -1 + self.brazoHeight
-            # print(self.currentHeight)
+            self.basura[self.basuraCargada].Position[1] += self.basuraHeight
         elif self.collision == 4 and self.currentHeight > self.minHeight:
             self.brazoHeight -= 0.05
             self.currentHeight = -1 + self.brazoHeight
+            self.basura[self.basuraCargada].Position[1] -= self.basuraHeight
         # Puntos de los brazos (frente del prisma verde)
         brazo_points1 = np.array([
             [0.0, -1.5 + self.brazoHeight, 1.5],  # Punto inferior izquierdo
@@ -337,7 +341,7 @@ class Cubo:
         # Agregar prisma gris
         self.drawPrismaCabina()
         
-        # Agregar prisma gris como techo
+        # Agregar prisma negro como techo
         glColor3f(0.0, 0.0, 0.0)  # Color del techo negro
         self.drawTecho()
         glPopMatrix()
@@ -345,6 +349,7 @@ class Cubo:
     def collisionDetection(self):
     #Revisar por colision contra basura mientras no se este cargando nada
         if self.collision == 0:
+            i = 0
             for obj in self.basura:
                 d_x = self.Position[0] - obj.Position[0]
                 d_z = self.Position[2] - obj.Position[2]
@@ -352,6 +357,9 @@ class Cubo:
                 if d_c - (self.radio + obj.radio) < 0.0 and obj.collision != 1:
                     self.collision = 1
                     obj.collision = 1
+                    self.basuraCargada = i
+                    obj.Position[0] = self.Position[0] + 8.0
+                    obj.Position[2] = self.Position[2] + 18.0
                     # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
                     newdir_x = -self.Position[0]
                     newdir_z = -self.Position[2]
@@ -359,6 +367,7 @@ class Cubo:
                     new_direction = [(newdir_x / m), 0, (newdir_z / m)]
                     self.Direction = new_direction
                     self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
+                i += 1
         for obj in self.basurero:
             d_x = self.Position[0] - obj.Position[0]
             d_z = self.Position[2] - obj.Position[2]
