@@ -1,14 +1,6 @@
 import pygame
 from pygame.locals import *
 
-
-# pero ya se que pex:
-
-# •⁠  ⁠⁠Poner Flags de que la basura ya fue recogida - Check, hacer tests
-# .  Cambiar a que el carrito mueva a la basura
-
-# •⁠  ⁠⁠Cambiar a que este este volteando siempre al frente
-
 # Cargamos las bibliotecas de OpenGL
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -101,7 +93,6 @@ def Init():
     glClearColor(0, 0, 0, 0)
     glEnable(GL_DEPTH_TEST)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-    # loadTexture()
     for i in range(nbasura):
         basura.append(Basura(DimBoard,3.0, cubos, basurero))
 
@@ -116,7 +107,6 @@ def Init():
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    # Axis()
 
     # Establecer el modo de relleno para el plano
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)

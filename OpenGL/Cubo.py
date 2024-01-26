@@ -127,8 +127,7 @@ class Cubo:
             [prisma_width / 2, prisma_height / 2, 2.0],
             [-prisma_width / 2, prisma_height / 2, 2.0],
         ])
-
-        # glColor3f(0.0, 1.0, 0.0)  # Color del prisma (verde en este caso)
+        
         glColor3f(0.0, 0.0, 0.0)
 
         glBegin(GL_QUADS)
@@ -177,7 +176,7 @@ class Cubo:
             [1.0 - brazo_width, -1.0 + self.brazoHeight, 1.5 + brazo_depth],  # Punto superior izquierdo trasero
         ])
 
-        glColor3f(1.0, 0.0, 0.0)  # Color de los brazos (rojo en este caso)
+        glColor3f(0.0, 0.0, 1.0)  # Color de los brazos (rojo en este caso)
 
         glBegin(GL_QUADS)
         for face in [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]:
@@ -305,10 +304,6 @@ class Cubo:
         glEnd()
         
     def drawPrismaCabina(self):
-        # Dimensiones originales del prisma rectangular gris
-        # prisma_gris_width = 1.5
-        # prisma_gris_height = 4.0
-        # prisma_gris_depth = 1.0
 
         prisma_gris_width = 1.9
         prisma_gris_height = 4.0
@@ -353,7 +348,6 @@ class Cubo:
         glPopMatrix()
 
     def collisionDetection(self):
-    #Revisar por colision contra basura mientras no se este cargando nada
         if self.collision == 0:
             i = 0
             for obj in self.basura:
@@ -386,7 +380,4 @@ class Cubo:
                 self.Direction[2] *= -1.0
             self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
 
-
-# la direccion actual, la comparamos con la nueva, y hacemos 
-# lo de pitagoras para sacar el angulo en el que rota
 
