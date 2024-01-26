@@ -30,6 +30,7 @@ class Cubo:
         self.basurero = basurero
         self.DimBoard = dim
         self.rotationAngle = 0.0
+        self.rotationActual = 0.0
         # Se inicializa una posicion aleatoria en el tablero
         self.Position = []
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
@@ -52,6 +53,11 @@ class Cubo:
 
     def update(self):
         self.collisionDetection()
+        if self.rotationActual != self.rotationAngle:
+            if self.rotationActual < self.rotationAngle:
+                self.rotationActual += 5
+            else:
+                self.rotationActual -= 5
         if self.collision == 0:
             new_x = self.Position[0] + self.Direction[0]
             new_z = self.Position[2] + self.Direction[2]
@@ -333,7 +339,7 @@ class Cubo:
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScaled(self.scale, self.scale, self.scale)
         glColor3f(0.0, 0.9, 0.0)
-        glRotatef(self.rotationAngle, 0.0, 1.0, 0.0)
+        glRotatef(self.rotationActual, 0.0, 1.0, 0.0)
         self.drawFaces()
         self.drawPrisma()
         self.drawBrazos()
@@ -358,8 +364,8 @@ class Cubo:
                     self.collision = 1
                     obj.collision = 1
                     self.basuraCargada = i
-                    obj.Position[0] = self.Position[0] + 8.0
-                    obj.Position[2] = self.Position[2] + 18.0
+                    obj.Position[0] = self.Position[0] - 8.0
+                    obj.Position[2] = self.Position[2] - 18.0
                     # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
                     newdir_x = -self.Position[0]
                     newdir_z = -self.Position[2]
