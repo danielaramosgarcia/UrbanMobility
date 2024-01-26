@@ -378,7 +378,7 @@ class Cubo:
                     self.collision = 4
                 self.Direction[0] *= -1.0
                 self.Direction[2] *= -1.0
-                self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
+            self.rotationAngle = (math.acos(self.Direction[0]) * 180 / math.pi) + 90
 
 
 # la direccion actual, la comparamos con la nueva, y hacemos 
