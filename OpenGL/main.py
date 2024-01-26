@@ -1,6 +1,14 @@
 import pygame
 from pygame.locals import *
 
+
+# pero ya se que pex:
+
+# •⁠  ⁠⁠Poner Flags de que la basura ya fue recogida - Check, hacer tests
+# .  Cambiar a que el carrito mueva a la basura
+
+# •⁠  ⁠⁠Cambiar a que este este volteando siempre al frente
+
 # Cargamos las bibliotecas de OpenGL
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -9,7 +17,7 @@ from OpenGL.GLUT import *
 # Se carga el archivo de la clase Cubo
 import sys
 
-sys.path.append('../../../Desktop/Graficas')
+sys.path.append('..')
 from Cubo import Cubo
 from Basura import Basura
 from Basurero import Basurero
@@ -45,35 +53,13 @@ pygame.init()
 
 # Carro = Cubo(DimBoard, 1.0)
 cubos = []
-ncubos = 15
+ncubos = 5
 
 #Basura
 basura = []
-nbasura = 10
+nbasura = 20
 
 basurero = []
-
-
-
-
-# def loadTexture():
-#     textureSurface = pygame.image.load(
-#         'images/wood_texture.jpeg')  # Asegúrate de que 'wood_texture.jpg' esté en tu directorio
-#     textureData = pygame.image.tostring(textureSurface, "RGBA", 1)
-#     width = textureSurface.get_width()
-#     height = textureSurface.get_height()
-#
-#     glEnable(GL_TEXTURE_2D)
-#     texid = glGenTextures(1)
-#     glBindTexture(GL_TEXTURE_2D, texid)
-#     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData)
-#
-#     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-#     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-#     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-#     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-#
-#     return texid
 
 
 def Axis():
@@ -117,12 +103,12 @@ def Init():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     # loadTexture()
     for i in range(nbasura):
-        basura.append(Basura(DimBoard, 1.0, 3.0, cubos, basurero))
+        basura.append(Basura(DimBoard,3.0, cubos, basurero))
 
     basurero.append(Basurero(DimBoard, 20.0))
 
     for i in range(ncubos):
-        cubos.append(Cubo(DimBoard, 1.0, 5.0, basura, basurero))
+        cubos.append(Cubo(DimBoard, 1.0, 6.0, basura, basurero))
 
 
 
