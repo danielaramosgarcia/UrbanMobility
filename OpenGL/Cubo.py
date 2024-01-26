@@ -18,7 +18,7 @@ class Cubo:
             [-1.0, 0.5, 1.5], [1.0, 0.5, 1.5], [1.0, 0.5, -1.5], [-1.0, 0.5, -1.5]])
 
         self.basuraCargada = 0
-        self.basuraHeight = 0.17
+        self.basuraHeight = 0.3
         self.brazoHeight = 0.5
         self.currentHeight = 0
         self.minHeight = -0.5
@@ -351,6 +351,8 @@ class Cubo:
                     self.collision = 1
                     obj.collision = 1
                     self.basuraCargada = i
+                    obj.Position[0] = self.Position[0] + 8.0
+                    obj.Position[2] = self.Position[2] + 18.0
                     # Cambia la dirección hacia el centro del mapa (asumiendo que el centro del mapa es (0,0))
                     newdir_x = -self.Position[0]
                     newdir_z = -self.Position[2]
